@@ -25,7 +25,8 @@ class GDrive {
      *
      * @var Google_Service_Drive $service
      */
-    private $service;
+    public $service;
+
     public function __construct($redirect_uri, $token)
     {
         $config = getenv('config.json');
@@ -44,7 +45,6 @@ class GDrive {
             }
             if ($this->client->isAccessTokenExpired()) {
                 $token = $this->client->fetchAccessTokenWithRefreshToken();
-                print_r($token);
                 file_put_contents(getenv('token.json'), json_encode($token));
             }
             $this->service = new Google_Service_Drive($this->client);
@@ -110,7 +110,11 @@ class GDrive {
     }
     public function getContent(Google_Service_Drive_DriveFile $file)
     {
-        $response = $this->service->files->get($file->id, array('alt' => 'media'));
+        return $this->getContentById($file->id);
+    }
+    public function getContentById($fileId)
+    {
+        $response = $this->service->files->get($fileId, array('alt' => 'media'));
         return ($response->getBody());
     }
 
@@ -157,5 +161,34 @@ class GDrive {
         }
         $list = [];
         return $this->listIn($id);
+    }
+
+    /**
+     *
+     * @return GDrive
+     */
+    public static function getInstance()
+    {
+
+        $path = getenv('token.json');
+        if (isset($_REQUEST['code'])) {
+            $drive = new GDrive(getenv('host.url') . "/index.php", false);
+            $token = $drive->fetchAccessToken($_REQUEST['code']);
+            file_put_contents($path, json_encode($token));
+            header('Location: ' . getenv('host.url') . "/index.php");
+            return;
+        } else {
+            $token = self::loadJson($path);
+            $drive = new GDrive(getenv('host.url') . "/index.php", $token);
+        }
+        return [$drive, $token];
+    }
+
+    private static function loadJson($path)
+    {
+        if (!file_exists($path)) {
+            return false;
+        }
+        return json_decode(file_get_contents($path), true);
     }
 }
