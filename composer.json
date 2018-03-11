@@ -1,0 +1,20 @@
+{
+    "name": "dcallizaya/my-drive",
+    "authors": [
+        {
+            "name": "David Callizaya",
+            "email": "davidcallizaya@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+          "Achachi\\": "src/Achachi/"
+        },
+        "files": [
+            "env.php"
+        ]
+    },
+    "require": {
+        "google/apiclient": "^2.0"
+    }
+}
