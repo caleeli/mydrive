@@ -10,6 +10,7 @@ if (empty($_REQUEST['id'])) {
 }
 
 list($drive, $token) = GDrive::getInstance();
+set_time_limit(0);
 
 $file = $drive->service->files->get($id);
 header(sprintf('Content-Disposition: attachment; filename="%s"', $file->name));
