@@ -13,5 +13,10 @@ list($drive, $token) = GDrive::getInstance();
 set_time_limit(0);
 
 $file = $drive->service->files->get($id);
-header(sprintf('Content-Disposition: attachment; filename="%s"', $file->name));
+if (substr($file->name, -5) === '.mobi') {
+    $mime = 'application/x-mobipocket-ebook';
+} else {
+    $mime = 'attachment';
+}
+header(sprintf('Content-Disposition: %s; filename="%s"', $mime, $file->name));
 echo $drive->getContent($file);
