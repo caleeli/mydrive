@@ -16,7 +16,8 @@ $file = $drive->service->files->get($id);
 if (substr($file->name, -5) === '.mobi') {
     $mime = 'application/x-mobipocket-ebook';
 } else {
-    $mime = 'attachment';
+    $mime = 'application/force-download';
 }
-header(sprintf('Content-Disposition: %s; filename="%s"', $mime, $file->name));
+header('Content-Type: ' . $mime);
+header(sprintf('Content-Disposition: attachment; filename="%s"', $file->name));
 echo $drive->getContent($file);
